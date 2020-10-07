@@ -13,4 +13,4 @@ class CharMatcher(TokenMatcher):
         return False
 
 from ..main import NlpExp
-NlpExp.register_exp("char", CharMatcher)
+NlpExp.register_exp("Char", CharMatcher)

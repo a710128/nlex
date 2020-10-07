@@ -44,3 +44,20 @@ class NlpExp(object):
         for tag in self.__taggers:
             tag.tag(sent)
         return MatchResult(sent)
+    
+    def All(self, *args) -> MatchResult:
+        if len(args) == 0:
+            raise TypeError("`All()` needs at least one parameter.")
+        if len(args) == 1 and isinstance(args[0], list):
+            args = args[0]
+        for i, result in enumerate(args):
+            if not isinstance(result, MatchResult):
+                raise TypeError("`All()`: parameter %d is not an instance of MatchResult" % i)
+        sent = args[0].sentence
+        for i, result in enumerate(args):
+            if result.sentence is not sent:
+                raise TypeError("`All()`: the sentence of result %d is different than result 0." % i)
+        ret = MatchResult(sent, [])
+        for result in args:
+            ret = ret.combine(result)
+        return ret

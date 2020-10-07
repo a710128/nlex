@@ -6,6 +6,7 @@ __all__ = [
     "register_exp",
     "register_tagger",
     "Sentence",
+    "All",
 ] + [
     matcher_name for matcher_name in NlpExp._get_matchers().keys()
 ]

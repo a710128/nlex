@@ -7,8 +7,8 @@ def main():
 
     s = sent.slot()
 
-    x = nlpexp.word(sent, repeat=[2, 3, 5])
-    x = nlpexp.word(x, slot=s)
+    x = nlpexp.Word(sent, repeat=[2, 3, 5])
+    x = nlpexp.Word(x, slot=s)
 
     correct_val = [ "就", "早点", "了" ]
     for it, gt in zip(x, correct_val):

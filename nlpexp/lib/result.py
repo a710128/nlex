@@ -72,3 +72,6 @@ class MatchResult(object):
     
     def slot(self) -> Slot:
         return Slot(self.sentence)
+    
+    def combine(self, result_b : 'MatchResult') -> 'MatchResult':
+        return MatchResult(self.sentence, self.__results + result_b.__results )

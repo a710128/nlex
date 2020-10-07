@@ -15,4 +15,4 @@ class WordMatcher(TokenMatcher):
         return False
 
 from ..main import NlpExp
-NlpExp.register_exp("word", WordMatcher)
+NlpExp.register_exp("Word", WordMatcher)
