@@ -1,6 +1,7 @@
 from typing import Iterator, AnyStr
 from .abc import Token
-class Sentence(object):
+from .abc import Sentence as Sentence_
+class Sentence(Sentence_):
     def __init__(self, sent : AnyStr):
         self.__sent = sent
         self.__tokens = {}

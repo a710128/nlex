@@ -1,6 +1,7 @@
-from ..lib import RepeatMatcher, Sentence, MatchResult, MatchResult, Slot
-from ..lib.abc import Tagger, Matcher
-from typing import Union, Tuple, List, AnyStr, Optional, Dict
+from .pack import mod_map
+from typing import Union, Tuple, List, AnyStr, Optional, Dict, Type
+from .lib.abc import Tagger, Matcher
+from .lib import MatchResult, RepeatMatcher, Sentence, Slot
 
 class ExpWrapper(object):
     def __init__(self, matcher):
@@ -9,39 +10,55 @@ class ExpWrapper(object):
     def __call__(self, match_result : MatchResult, *args, repeat : Union[int, Tuple[int, int], List[int], AnyStr] = None, slot : Optional[Slot] = None, **kwargs) -> MatchResult:
         if repeat is not None:
             ret = RepeatMatcher()(match_result, repeat, self.matcher, *args, **kwargs)
-
         else:
             ret = self.matcher(match_result, *args, **kwargs)
+        ret.unique_()
         if slot is not None:
             for it in ret:
                 it.structure.set_slot(slot)
         return ret
-
-class NlpExp(object):
+    
+class Nlex(object):
     def __init__(self):
-        self.__taggers = []
-        self.__exps = {}
+        self.__taggers = {}
+        self.__methods = {}
+        self.__registerd = set()
     
-    def register_exp(self, name, exp):
-        self.__exps[name] = exp
+    def register(self, name : AnyStr, *args, **kwargs):
+        if name not in mod_map:
+            raise AttributeError(
+                "No module named '%s'" % name
+            )
+        if name in self.__registerd:
+            return
+        self.__registerd.add(name)
+        obj = mod_map[name](*args, **kwargs)
+        obj.init(self)
     
-    def register_tagger(self, tagger : Tagger):
-        self.__taggers.append(tagger())
+    def _add_tagger(self, name : AnyStr, tagger : Union[Type[Tagger], Tagger]):
+        if isinstance(tagger, type):
+            self.__taggers[name] = tagger()
+        else:
+            self.__taggers[name] = tagger
     
-    def __getattr__(self, name):
-        if name in self.__exps:
-            return ExpWrapper(self.__exps[name]())
+    def _add_method(self, name : AnyStr, method : Union[Type[Matcher], Matcher]):
+        self.__methods[name] = method
+    
+    def __getattr__(self, name : AnyStr) -> ExpWrapper:
+        if name in self.__methods:
+            if isinstance(self.__methods[name], type):
+                # if it is a class, then new an instance
+                return ExpWrapper(self.__methods[name]())
+            else:
+                return ExpWrapper(self.__methods[name])
         raise AttributeError(
             "'%s' object has no attribute '%s" % \
                 ( self.__class__.__name__, name )
         )
     
-    def _get_matchers(self) -> Dict[AnyStr, Matcher]:
-        return self.__exps
-    
-    def Sentence(self, sent):
+    def Sentence(self, sent : AnyStr) -> MatchResult:
         sent = Sentence(sent)
-        for tag in self.__taggers:
+        for tag in self.__taggers.values():
             tag.tag(sent)
         return MatchResult(sent)
     

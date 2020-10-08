@@ -4,16 +4,18 @@ from .sentence import Sentence
 from .structure import Structure, StartStructure, StartStructure, ModuleStructure, TokenStructure
 from .slot import Slot
 
-def find_slot(structure: Structure, slot) -> Union[Tuple[int, int], None]:
+def find_slot(structure: Structure, slot) -> Union[Structure, None]:
     x = structure
     while not isinstance(x, StartStructure):
         if x.is_slot(slot):
-            return x.get_value()
+            return x
         if isinstance(x, ModuleStructure):
             res = find_slot( x.sub, slot )
             if res is not None:
                 return res
+        x = x.last()
     return None
+
 
 class SingleResult(object):
     def __init__(self, start_idx, structure : Structure):
@@ -23,7 +25,7 @@ class SingleResult(object):
     def index(self):
         return self.__start_idx
     
-    def get_slot(self, slot : Slot):
+    def _get_slot(self, slot : Slot) -> Union[Structure, None]:
         return find_slot(self.structure, slot)
 
     def __repr__(self):
@@ -75,3 +77,21 @@ class MatchResult(object):
     
     def combine(self, result_b : 'MatchResult') -> 'MatchResult':
         return MatchResult(self.sentence, self.__results + result_b.__results )
+    
+    def unique_(self):
+        new_result = []
+        vis = set()
+        for it in self.__results:
+            if it.index() not in vis:
+                vis.add(it.index())
+                new_result.append(it)
+        self.__results = new_result
+    
+    def unique(self) -> 'MatchResult':
+        new_result = []
+        vis = set()
+        for it in self.__results:
+            if it.index() not in vis:
+                vis.add(it.index())
+                new_result.append(it)
+        return MatchResult(self.sentence, new_result)

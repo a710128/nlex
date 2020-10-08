@@ -1,25 +1,8 @@
-from .main import NlpExp
-from . import exp as __exp
-from . import tagger as __tagger
+from .lib import *
+from .nlexp import Nlex
+from .pack import mod_map
 
-__all__ = [
-    "register_exp",
-    "register_tagger",
-    "Sentence",
-    "All",
-] + [
-    matcher_name for matcher_name in NlpExp._get_matchers().keys()
-]
-
-for name in __all__:
-    if name.startswith('__'):
-        continue
-    globals()[name] = getattr(NlpExp, name)
-
-del NlpExp
-del main
-del exp
-del name
-del tagger
-
-from . import lib
+nlex = Nlex()
+for name in mod_map.keys():
+    nlex.register(name)
+del mod_map

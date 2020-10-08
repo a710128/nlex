@@ -1,23 +1,8 @@
-from .abc import Token
+from .abc import Token, Structure
 from .slot import Slot
 from typing import TypeVar, Type, Tuple, Iterator, List, Union
 
-class Structure(object):
-    def __init__(self):
-        pass
-    
-    def set_slot(self, slot : Slot) -> None:
-        pass
 
-    def is_slot(self, slot : Slot) -> bool:
-        return False
-
-    def get_value(self) -> Tuple[int, int]:
-        return (0, 0)
-
-    def last(self) -> Union[None, 'Structure']:
-        return None
-    
 class StartStructure(Structure):
     def __init__(self):
         pass
