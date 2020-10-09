@@ -55,7 +55,7 @@ class MatchResult(object):
     def __init__(self, sentence : Sentence, results : Optional[List[SingleResult]] = None):
         self.sentence = sentence
         if results is None:
-            self.__results = [ SingleResult(0, StartStructure()) ]
+            self.__results = [ SingleResult(idx, StartStructure()) for idx in range(len(self.sentence)) ]
         else:
             self.__results = results
 
@@ -95,3 +95,17 @@ class MatchResult(object):
                 vis.add(it.index())
                 new_result.append(it)
         return MatchResult(self.sentence, new_result)
+    
+    def exclude(self, result_b : 'MatchResult') -> 'MatchResult':
+        vis = set()
+        for it in result_b.__results:
+            vis.add(it.index())
+        ret = [it for it in self.__results if it.index() not in vis ]
+        return MatchResult(self.sentence, ret)
+    
+    def exclude_(self, result_b : 'MatchResult'):
+        vis = set()
+        for it in result_b.__results:
+            vis.add(it.index())
+        ret = [it for it in self.__results if it.index() not in vis ]
+        self.__results = ret

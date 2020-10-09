@@ -22,34 +22,44 @@ CHN_CHAR = {
     u"\u039f": 0,
     u'零': 0,
     u"O": 0,
+    u"０": 0,
     u"0": 0,
     u"1": 1,
+    u"１": 1,
     u"一": 1,
     u"壹": 1,
     u"二": 2,
     u"2": 2,
+    u"２": 2,
     u"贰": 2,
     u"两": 2,
     u'三': 3,
     u"3": 3,
+    u"３": 3,
     u"叁": 3,
     u'四': 4,
     u"4": 4,
+    u"４": 4,
     u"肆": 4,
     u'五': 5,
     u"5": 5,
+    u"５": 5,
     u"伍": 5,
     u'六': 6,
     u"6": 6,
+    u"６": 6,
     u"陆": 6,
     u'七': 7,
     u"7": 7,
+    u"７": 7,
     u"柒": 7,
     u'八': 8,
     u"8": 8,
+    u"８": 8,
     u"捌": 8,
     u'九': 9,
     u"9": 9,
+    u"９": 9,
     u"玖": 9,
     u'十': 10,
     u"拾": 10,
@@ -173,7 +183,7 @@ class NumberTagger(Tagger):
             else:
                 first = True
         for idx, it in zip(lst_index, lst):
-            if idx in vis:
+            if (idx in vis) and (it.find(".") == -1):
                 continue
             try:
                 clean_it = sanitize(it)
@@ -199,7 +209,7 @@ class NumberMatcher(TokenMatcher):
             return True
         return False
 
-class NumberPack(Package):
+class NumberPack(Package, name="number"):
     def __init__(self, chn=True):
         self.chn = chn
     

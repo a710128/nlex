@@ -43,7 +43,7 @@ class AnyCharMatcher(TokenMatcher):
             return True
         return False
 
-class CharPack(Package):
+class CharPack(Package, name="char"):
     def init(self, nlex : 'Nlex'):
         nlex._add_tagger("CharTagger", CharTagger() )
         nlex._add_method("Char", CharMatcher())

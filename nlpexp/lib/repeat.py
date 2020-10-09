@@ -63,6 +63,8 @@ def Repeat(repeat : Union[int, Tuple[int, int], List[int], AnyStr]) -> _Repeat:
             return LowRepeat(0)
         elif repeat == "+":
             return LowRepeat(1)
+        elif repeat == "?":
+            return RangeRepeat(0, 1)
     raise TypeError(
         "Unknown repeat type"
     )

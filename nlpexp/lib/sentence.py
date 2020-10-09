@@ -20,3 +20,6 @@ class Sentence(Sentence_):
             return
         for it in self.__tokens[index]:
             yield it
+    
+    def __len__(self):
+        return len(self.__sent)
