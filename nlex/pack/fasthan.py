@@ -1,6 +1,6 @@
 
-from nlpexp.lib.abc import Package, Token, Tagger
-from nlpexp.lib import Sentence, TokenMatcher
+from nlex.lib.abc import Package, Token, Tagger
+from nlex.lib import Sentence, TokenMatcher
 import re
 
 class WordToken(Token):

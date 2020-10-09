@@ -1,4 +1,4 @@
-from nlpexp import nlex, consts as cst, exp
+from nlex import nlex, consts as cst, exp
 def main():
     nlex.add(exp.Date)
     nlex.add(exp.Money)

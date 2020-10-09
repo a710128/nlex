@@ -1,5 +1,5 @@
-from nlpexp.lib.abc import Package, Token, Tagger, Sentence
-from nlpexp.lib import TokenMatcher
+from nlex.lib.abc import Package, Token, Tagger, Sentence
+from nlex.lib import TokenMatcher
 
 class CharToken(Token):
     def __init__(self, val, start, end):
