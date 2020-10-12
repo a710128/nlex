@@ -67,21 +67,21 @@ class WordMatcher(TokenMatcher):
     def __init__(self):
         super().__init__(WordToken)
 
-    def match(self, token : WordToken, val=None, regex=None, pos=None):
+    def match(self, token : WordToken, val=None, regex=None, pos=None, neq=False):
         if super().match(token):
             if (val is not None):
                 if isinstance(val, str) and (token.val.lower() != val.lower()):
-                    return False
+                    return neq
                 if isinstance(val, list):
                     val = [it.lower() for it in val]
                     if token.val.lower() not in val:
-                        return False
+                        return neq
             if regex is not None:
                 if re.match(regex, token.val) is None:
-                    return False
+                    return neq
             if (pos is not None) and (token.pos.lower() != pos.lower()):
-                return False
-            return True
+                return neq
+            return not neq
         return False
 
 class AnyWordMatcher(TokenMatcher):

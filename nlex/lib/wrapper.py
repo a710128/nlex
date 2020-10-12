@@ -1,5 +1,5 @@
 from .result import MatchResult
-from .matcher import RepeatMatcher
+from .matcher import RepeatMatcher, TokenMatcher, ModuleMatcher
 from .abc import Matcher
 from typing import Union, Tuple, List, AnyStr, Optional
 from .slot import Slot
@@ -28,15 +28,18 @@ class ExpWrapper(object):
         if greedy is not None:
             if "greedy" in inspect.getfullargspec(self.matcher.match).args:
                 kwargs["greedy"] = greedy
-
-        if greedy is None:
-            greedy = True
+        else:
+            greedy = True if not (isinstance(repeat, str) and repeat in "+*") else False
 
         if repeat is not None:
-            ret = RepeatMatcher()(match_result, repeat, self.matcher, *args, slot=slot, **kwargs)
+            ret = RepeatMatcher()(match_result, repeat, self.matcher, args, kwargs, slot=slot)
             if greedy and len(ret) > 0:
                 ret = unique_repeat(ret)
         else:
             ret = self.matcher(match_result, *args, slot=slot, **kwargs)
-        ret.unique_()
+
+        if isinstance(self.matcher, TokenMatcher) or ( isinstance(self.matcher, ModuleMatcher) and self.matcher.SHORT_MATCH):
+            ret.unique_()
+        else:
+            ret.unique_(short=False)
         return ret

@@ -4,7 +4,7 @@ from ..result import MatchResult
 from ..repeat import Repeat
 
 class RepeatMatcher(ModuleMatcher):
-    def match(self, x : MatchResult, repeat, sub_matcher, *args, **kwargs):
+    def match(self, x : MatchResult, repeat, sub_matcher, args, kwargs):
         if not isinstance(repeat, abc.Repeat):
             repeat = Repeat(repeat)
         

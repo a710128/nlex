@@ -78,23 +78,25 @@ class MatchResult(object):
     def combine(self, result_b : 'MatchResult') -> 'MatchResult':
         return MatchResult(self.sentence, self.__results + result_b.__results )
     
-    def unique_(self):
-        new_result = []
-        vis = set()
+    def unique_(self, short : bool = True):
+        vis = {}
         for it in self.__results:
             if it.index() not in vis:
-                vis.add(it.index())
-                new_result.append(it)
-        self.__results = new_result
+                vis[it.index()] = it
+            else:
+                if (vis[it.index()].structure.get_value()[0] < it.structure.get_value()[0]) == short:
+                    vis[it.index()] = it
+        self.__results = list(vis.values())
     
-    def unique(self) -> 'MatchResult':
-        new_result = []
-        vis = set()
+    def unique(self, short : bool = True) -> 'MatchResult':
+        vis = {}
         for it in self.__results:
             if it.index() not in vis:
-                vis.add(it.index())
-                new_result.append(it)
-        return MatchResult(self.sentence, new_result)
+                vis[it.index()] = it
+            else:
+                if (vis[it.index()].structure.get_value()[0] < it.structure.get_value()[0]) == short:
+                    vis[it.index()] = it
+        return MatchResult(self.sentence, list(vis.values()))
     
     def exclude(self, result_b : 'MatchResult') -> 'MatchResult':
         vis = set()

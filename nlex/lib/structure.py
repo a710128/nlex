@@ -4,8 +4,9 @@ from typing import TypeVar, Type, Tuple, Iterator, List, Union
 
 
 class StartStructure(Structure):
-    def __init__(self):
-        pass
+    def __init__(self, parent = None, pos = None):
+        self.parent = parent
+        self.pos = pos
 
     def set_slot(self, slot : Slot):
         pass

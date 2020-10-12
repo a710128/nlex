@@ -1,11 +1,12 @@
 from ..abc import Matcher
-from typing import List, Union, AnyStr
+from typing import List, Union, AnyStr, Optional
 from ..result import MatchResult, SingleResult
 from ..structure import ModuleStructure, StartStructure
 
 class ModuleMatcher(Matcher):
     NAME : AnyStr = "Module"
     REQ : List[AnyStr] = []
+    SHORT_MATCH : bool = True
 
     def __init__(self):
         self._submodules = {}
@@ -15,13 +16,14 @@ class ModuleMatcher(Matcher):
         for it in self._submodules.values():
             it._assign(nlex)
 
-    def __init_subclass__(cls, name : Union[None, AnyStr] =None, require : Union[List[AnyStr], AnyStr] = []):
+    def __init_subclass__(cls, name : Optional[AnyStr] = None, require : Union[List[AnyStr], AnyStr] = [], short : bool = True):
         if name is None:
             name = cls.__name__
         if isinstance(require, str):
             require = [require]
         type.__setattr__(cls, "REQ", require)
         type.__setattr__(cls, "NAME", name)
+        type.__setattr__(cls, "SHORT_MATCH", short)
 
     def __check_init(self):
         if not hasattr(self, "_submodules"):
@@ -34,13 +36,24 @@ class ModuleMatcher(Matcher):
 
     def __call__(self, match_result : MatchResult, *args, slot=None, **kwargs):        
         new_result = []
-        for it in match_result:
-            wrapper_result = MatchResult( match_result.sentence, [ SingleResult(it.index(), StartStructure()) ] )
-            res = self.match(wrapper_result, *args, **kwargs)
-            for sub_res in res:
-                new_result.append(
-                    SingleResult( sub_res.index(), ModuleStructure( self.__class__, it.structure, sub_res.structure, it.index(), sub_res.index() ) )
+        wrapper_result = MatchResult(
+            match_result.sentence,
+            [
+                SingleResult( it.index(), StartStructure(it.structure, pos=it.index()) )
+                    for it in match_result
+            ]
+        )
+        res = self.match(wrapper_result, *args, **kwargs)
+        for sub_res in res:
+            x = sub_res.structure
+            while not isinstance(x, StartStructure):
+                x = x.last()
+            new_result.append(
+                SingleResult(
+                    sub_res.index(),
+                    ModuleStructure( self.__class__, x.parent, sub_res.structure, x.pos, sub_res.index() )
                 )
+            )
         if slot is not None:
             for it in new_result:
                 it.structure.set_slot(slot)
